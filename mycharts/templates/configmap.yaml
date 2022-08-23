@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+  {{- template "mycharts.labels" . }}
+data:
+  myvalue: "Hello World"
+  {{- $relname := .Release.Name | upper }}
+  favoriteFood: {{ .Values.favorite.food | repeat 5 | quote }}
+  favoriteDrink: {{ .Values.favorite.drink | quote | upper }}
+  {{- with .Values.favorite }}
+  favoriteDesert: {{ .desert | default "brownie" | title }}
+  {{- if eq .drink "tuica" }}
+  alcool: "20%"
+  {{- else if eq .drink "bear" }}
+  alcool: "5%"
+  {{- else }}
+  alcool: "0%"
+  {{- end }}
+  toppings: |-
+    {{- range $.Values.pizzaToppings }}
+    - {{ . | title | quote }}
+    {{- end }}
+  salad: {{ $.Values.global.salad }}
+  # release: .Release.Name - incorect
+  release: {{ $.Release.Name }}
+  releaseVariable: {{ $relname }}
+  {{- end }}
+  sizes: |-
+    {{- range tuple "small" "medium" "large" }}
+    - {{ . | title }}
+    {{- end }}
+  releaseOuter: {{ $.Release.Name }}
+  toppingsVariable: |-
+    {{- range $index, $topping := .Values.pizzaToppings }}
+        {{ $index }}: {{ $topping }}
+    {{- end }}
+  sizesMap: |-
+    {{- range $key, $val := .Values.sizes }}
+    {{ $key }} => {{ $val | upper }}
+    {{- end }}
+  {{- $files := .Files }}
+  testData: |-
+    {{- range tuple "config1.toml" "config2.toml" "config3.toml"}}
+    {{ . }}: |-
+        {{ $files.Get . }}
+    {{- end }}
+  filesTest: |-
+    {{ range $path, $_ := .Files.Glob "**.toml" }}
+      {{ $.Files.Get $path }}
+    {{ end }}
+  fileBar: |-
+    {{ range .Files.Lines "data/bar.txt" }}
+    {{ . }}
+    {{ end }}
+{{- include "mycharts.app" . | indent 2}}
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conf
+data:
+{{ (.Files.Glob "data/*").AsConfig | indent 2 }}
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: very-secret
+type: Opaque
+data:
+{{ (.Files.Glob "data/*").AsSecrets | indent 2 }}
+
+
+

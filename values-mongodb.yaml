@@ -1,0 +1,9 @@
+global:
+    auth:
+        rootPassword: R0ot#1234
+        usernames:
+            - user01
+        passwords:
+            - Us3r@1
+        databases:
+            - testdb

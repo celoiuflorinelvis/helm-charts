@@ -1,0 +1,20 @@
+favorite:
+  food: sarmale
+  drink: tuica
+pizzaToppings:
+  - mushrooms
+  - cheese
+  - peppers
+  - onions
+sizes:
+  size_1: xs
+  size_2: s
+  size_3: m
+  size_4: l
+  size_5: xl
+
+mysubchart:
+  dessert: brownie
+
+global:
+  salad: caesar
